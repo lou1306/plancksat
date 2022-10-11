@@ -1,6 +1,7 @@
 /*****************************************************************************************[Main.cc]
 Copyright (c) 2003-2006, Niklas Een, Niklas Sorensson
 Copyright (c) 2007,      Niklas Sorensson
+Hacks and slashes (c) 2022 Luca Di Stefano based on previous work by Omar Inverso
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
 associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -72,7 +73,8 @@ int main(int argc, char** argv)
 {
     try {
         setUsageHelp("USAGE: %s [options] <input-file> <result-output-file>\n\n  where input may be either in plain or gzipped DIMACS.\n");
-        // printf("This is MiniSat 2.0 beta\n");
+        printf("c This is PlanckSAT 1.0\n");
+        printf("c Based on MiniSAT 2.2.1\n");
         
 #if defined(__linux__) && defined(_FPU_EXTENDED) && defined(_FPU_DOUBLE) && defined(_FPU_GETCW)
         fpu_control_t oldcw, newcw;
