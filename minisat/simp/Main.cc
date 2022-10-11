@@ -185,6 +185,15 @@ int main(int argc, char** argv)
             printStats(S);
             printf("\n"); }
         printf(ret == l_True ? "SATISFIABLE\n" : ret == l_False ? "UNSATISFIABLE\n" : "INDETERMINATE\n");
+
+        if (mdl && ret == l_True) {
+            printf("\nv ");
+            for (int i = 0; i < S.nVars(); i++)
+                if (S.model[i] != l_Undef)
+                    printf("%s%s%d", (i==0)?"":" ", (S.model[i]==l_True)?"":"-", i+1);
+            printf(" 0\n");
+        }
+
         if (res != NULL){
             if (ret == l_True){
                 fprintf(res, "SAT\n");
