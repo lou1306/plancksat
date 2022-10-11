@@ -50,6 +50,11 @@ static void parse_DIMACS_main(B& in, Solver& S) {
     int vars    = 0;
     int clauses = 0;
     int cnt     = 0;
+
+    // LUCA 20221004
+    int maxClause = 0;
+    double avgClause = .0;
+
     for (;;){
         skipWhitespace(in);
         if (*in == EOF) break;
@@ -68,7 +73,17 @@ static void parse_DIMACS_main(B& in, Solver& S) {
         else{
             cnt++;
             readClause(in, S, lits);
-            S.addClause_(lits); }
+            if (lits.size() > maxClause) maxClause = lits.size();
+            avgClause = avgClause + (lits.size() - avgClause) / cnt;
+            S.addClause_(lits); 
+        }
+    }
+    if (S.verbosity > 0){
+        /* For reference
+        printf("c |  Number of variables:  %12d                                         |\n", S.nVars());
+        */
+        printf("c |  Longest clause:       %12d                                         |\n", maxClause);       
+        printf("c |  Average clause:       %12.2f                                       |\n", avgClause);       
     }
     if (vars != S.nVars())
         fprintf(stderr, "WARNING! DIMACS header mismatch: wrong number of variables.\n");
