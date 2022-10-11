@@ -22,6 +22,7 @@ OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWA
 
 #include "minisat/mtl/Sort.h"
 #include "minisat/core/Solver.h"
+// #include "minisat/utils/System.h"  // OMAR
 
 using namespace Minisat;
 
@@ -43,6 +44,8 @@ static IntOption     opt_restart_first     (_cat, "rfirst",      "The base resta
 static DoubleOption  opt_restart_inc       (_cat, "rinc",        "Restart interval increase factor", 2, DoubleRange(1, false, HUGE_VAL, false));
 static DoubleOption  opt_garbage_frac      (_cat, "gc-frac",     "The fraction of wasted memory allowed before a garbage collection is triggered",  0.20, DoubleRange(0, false, HUGE_VAL, false));
 
+// static bool DEBUGOMAR = 1; // OMAR debug info flag
+static bool showsteps = 0; // OMAR debug info flag
 
 //=================================================================================================
 // Constructor/Destructor:
@@ -206,11 +209,12 @@ bool Solver::satisfied(const Clause& c) const {
 // Revert to the state at given level (keeping all assignment at 'level' but not beyond).
 //
 void Solver::cancelUntil(int level) {
+    if (showsteps) printf("c level:%d backjump:%d\n", decisionLevel(), level);
     if (decisionLevel() > level){
         for (int c = trail.size()-1; c >= trail_lim[level]; c--){
             Var      x  = var(trail[c]);
             assigns [x] = l_Undef;
-            if (phase_saving > 1 || (phase_saving == 1) && c > trail_lim.last())
+            if (phase_saving > 1 || ((phase_saving == 1) && c > trail_lim.last()))
                 polarity[x] = sign(trail[c]);
             insertVarOrder(x); }
         qhead = trail_lim[level];
@@ -628,6 +632,66 @@ lbool Solver::search(int nof_conflicts)
     vec<Lit>    learnt_clause;
     starts++;
 
+    // // OMAR start
+    // // Simplify formula by using the provided assumption:
+    // static int FIRSTTIME = 1;
+
+    // if (assumptions.size() > 0 && FIRSTTIME) {
+    //     if (DEBUGOMAR) printf("c %d variables, %d clauses, %d freevars, %d learnt (without initial assumptions)\n", nVars(), nClauses(), nFreeVars(), nLearnts());
+
+    //     for (int j=0; j<assumptions.size(); j++) {
+    //         //int res = enqueue(assumptions[j]);
+    //         setPolarity(var(assumptions[j]), toLbool(sign(assumptions[j]))); // Declare which polarity the decision heuristic should use for a variable. Requires mode 'polarity_user'.
+    //         setDecisionVar(var(assumptions[j]), 1);  // Declare if a variable should be eligible for selection in the decision heuristic.
+    //         printf("c - -> %d %d\n", var(assumptions[j]), sign(assumptions[j]));
+    //         /*
+    //         // step 1 - add assumption as a unit clause
+    //         bool res = addClause(assumptions[j]);
+    //         if (DEBUGOMAR) printf("%d variables, %d clauses, %d freevars, %d learnt (after adding clauses)\n", nVars(), nClauses(), nFreeVars(), nLearnts());
+
+    //         if (res==0) {
+    //             if (DEBUGOMAR) printf("instance trivially unsatisfiable while adding clauses\n"); // OMAR
+    //             return l_False; // trivially unsat????!?!?
+    //         }
+    //         ////} else {
+    //         ////    if (DEBUGOMAR) printf("\nDEBUG addClause() success: result=%d\n", res);
+    //         ////}
+    //         */
+    //     }
+
+    //     assumptions.clear();
+
+    //     /*
+    //     // 2 -
+    //     bool ret = simplify();
+    //     if (DEBUGOMAR) printf("%d variables, %d clauses, %d freevars, %d learnt (after simplifying)\n", nVars(), nClauses(), nFreeVars(), nLearnts());
+
+    //     if (ret==0) {
+    //         if (DEBUGOMAR) printf("instance trivially unsatisfiable while simplifying clauses\n"); // OMAR
+    //         return l_False; // trivially unsat????!?!?
+    //     }
+
+    //     // 3
+    //     CRef confl = propagate();
+    //     if (DEBUGOMAR) printf("%d variables, %d clauses, %d freevars, %d learnt (after propagate)\n", nVars(), nClauses(), nFreeVars(), nLearnts());
+
+    //     if (confl != CRef_Undef) {
+    //         if (DEBUGOMAR) printf("instance trivially unsatisfiable while propagating\n"); // OMAR
+    //         return l_False; // trivially unsat????!?!?
+    //     }
+
+    //     // 4
+    //     removeSatisfied(clauses);
+    //     if (DEBUGOMAR) printf("%d variables, %d clauses, %d freevars, %d learnt (after removing satisfied)\n", nVars(), nClauses(), nFreeVars(), nLearnts());
+
+    //     FIRSTTIME = 0;
+    //     */
+    // }
+    // // OMAR end
+    // ////setPolarity    (Var v, lbool b); // Declare which polarity the decision heuristic should use for a variable. Requires mode 'polarity_user'.
+    // ///setDecisionVar (Var v, bool b);  // Declare if a variable should be eligible for selection in the decision heuristic.
+
+
     for (;;){
         CRef confl = propagate();
         if (confl != CRef_Undef){
@@ -682,16 +746,20 @@ lbool Solver::search(int nof_conflicts)
 
             Lit next = lit_Undef;
             while (decisionLevel() < assumptions.size()){
+                if (showsteps) printf("level:%d new assumption\n", decisionLevel()); // OMAR OMAR OMAR
                 // Perform user provided assumption:
                 Lit p = assumptions[decisionLevel()];
                 if (value(p) == l_True){
+                    if (showsteps) printf("level:%d DEBUG    A ASS\n", decisionLevel());  // OMAR
                     // Dummy decision level:
                     newDecisionLevel();
                 }else if (value(p) == l_False){
+                    if (showsteps) printf("[%d] DEBUG    B ASS\n", decisionLevel());  // OMAR
                     analyzeFinal(~p, conflict);
                     return l_False;
                 }else{
                     next = p;
+                    if (showsteps) printf("[%d] DEBUG    C ASS [%d=%d]\n", decisionLevel(), var(next), sign(next));  // OMAR
                     break;
                 }
             }
@@ -700,6 +768,7 @@ lbool Solver::search(int nof_conflicts)
                 // New variable decision:
                 decisions++;
                 next = pickBranchLit();
+                if (showsteps) printf("level:%d choice:%d=%d\n", decisionLevel(), var(next), sign(next));  // OMAR
 
                 if (next == lit_Undef)
                     // Model found:
@@ -784,6 +853,7 @@ lbool Solver::solve_()
         status = search(rest_base * restart_first);
         if (!withinBudget()) break;
         curr_restarts++;
+        if (showsteps) printf("c level:%d restarts:%d\n", decisionLevel(), curr_restarts); // OMAR OMAR
     }
 
     if (verbosity >= 1)
