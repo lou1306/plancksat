@@ -88,6 +88,10 @@ int main(int argc, char** argv)
         IntOption    cpu_lim("MAIN", "cpu-lim","Limit on CPU time allowed in seconds.\n", INT32_MAX, IntRange(0, INT32_MAX));
         IntOption    mem_lim("MAIN", "mem-lim","Limit on memory usage in megabytes.\n", INT32_MAX, IntRange(0, INT32_MAX));
 
+        // LUCA 20221003
+        StringOption assume("MAIN", "assume", "Solve under these additional clauses.", "");
+        StringOption try_assume("MAIN", "try-assume", "Try solving under this additional clause, but feel free to drop any of them", "");
+
         parseOptions(argc, argv, true);
         
         SimpSolver  S;
@@ -179,6 +183,37 @@ int main(int argc, char** argv)
         }
 
         vec<Lit> dummy;
+        //=====================================================================
+        // LUCA 20221003
+        // This is where we inject our assumptions.
+        // 1. "assume"s are unit clauses that we just push onto the solver.
+        // vec<Lit> nextUnit;
+
+        // First, we have to do this little dance to appease readClause()
+        char* str;
+        str = strdup((const char*)assume);
+        strcat(str, " 0");
+        
+        // Then we add the unit clause
+        readClause(str, S, dummy);
+        while (dummy.size()) {
+            S.addClause(dummy.last());
+            dummy.pop();
+        }
+        dummy.clear(); // Just to be sure
+        
+        // 2. For "try-assumes" we set polarities according to the user's wishes
+        // (But the solver may still change them if needed)
+        const char* str1 = try_assume;
+        int v = 0;
+        lbool x;
+        while (*str1 != '\0') {
+            v = parseInt(str1);
+            S.setPolarity((v >= 0 ? v : -v), lbool(v > 0));
+        }
+        
+        //=====================================================================
+
         lbool ret = S.solveLimited(dummy);
         
         if (S.verbosity > 0){
