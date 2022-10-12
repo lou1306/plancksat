@@ -57,10 +57,10 @@ static void SIGINT_interrupt(int signum) { solver->interrupt(); }
 // destructors and may cause deadlocks if a malloc/free function happens to be running (these
 // functions are guarded by locks for multithreaded use).
 static void SIGINT_exit(int signum) {
-    printf("\n"); printf("*** INTERRUPTED ***\n");
+    printf("\n"); printf("c *** INTERRUPTED ***\n");
     if (solver->verbosity > 0){
         printStats(*solver);
-        printf("\n"); printf("*** INTERRUPTED ***\n"); }
+        printf("\n"); printf("c *** INTERRUPTED ***\n"); }
     _exit(1); }
 
 
@@ -71,13 +71,13 @@ static void SIGINT_exit(int signum) {
 int main(int argc, char** argv)
 {
     try {
-        setUsageHelp("USAGE: %s [options] <input-file> <result-output-file>\n\n  where input may be either in plain or gzipped DIMACS.\n");
+        setUsageHelp("c USAGE: %s [options] <input-file> <result-output-file>\n\n  where input may be either in plain or gzipped DIMACS.\n");
         // printf("This is MiniSat 2.0 beta\n");
         
 #if defined(__linux__) && defined(_FPU_EXTENDED) && defined(_FPU_DOUBLE) && defined(_FPU_GETCW)
         fpu_control_t oldcw, newcw;
         _FPU_GETCW(oldcw); newcw = (oldcw & ~_FPU_EXTENDED) | _FPU_DOUBLE; _FPU_SETCW(newcw);
-        printf("WARNING: for repeatability, setting FPU to use double precision\n");
+        printf("c WARNING: for repeatability, setting FPU to use double precision\n");
 #endif
         // Extra options:
         //
@@ -105,7 +105,7 @@ int main(int argc, char** argv)
             if (rl.rlim_max == RLIM_INFINITY || (rlim_t)cpu_lim < rl.rlim_max){
                 rl.rlim_cur = cpu_lim;
                 if (setrlimit(RLIMIT_CPU, &rl) == -1)
-                    printf("WARNING! Could not set resource limit: CPU-time.\n");
+                    printf("c WARNING! Could not set resource limit: CPU-time.\n");
             } }
 
         // Set limit on virtual memory:
@@ -116,15 +116,15 @@ int main(int argc, char** argv)
             if (rl.rlim_max == RLIM_INFINITY || new_mem_lim < rl.rlim_max){
                 rl.rlim_cur = new_mem_lim;
                 if (setrlimit(RLIMIT_AS, &rl) == -1)
-                    printf("WARNING! Could not set resource limit: Virtual memory.\n");
+                    printf("c WARNING! Could not set resource limit: Virtual memory.\n");
             } }
         
         if (argc == 1)
-            printf("Reading from standard input... Use '--help' for help.\n");
+            printf("c Reading from standard input... Use '--help' for help.\n");
         
         gzFile in = (argc == 1) ? gzdopen(0, "rb") : gzopen(argv[1], "rb");
         if (in == NULL)
-            printf("ERROR! Could not open file: %s\n", argc == 1 ? "<stdin>" : argv[1]), exit(1);
+            printf("c ERROR! Could not open file: %s\n", argc == 1 ? "<stdin>" : argv[1]), exit(1);
         
         if (S.verbosity > 0){
             printf("c ============================[ Problem Statistics ]=============================\n");

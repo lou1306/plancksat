@@ -753,20 +753,20 @@ lbool Solver::search(int nof_conflicts)
 
             Lit next = lit_Undef;
             while (decisionLevel() < assumptions.size()){
-                if (showsteps) printf("level:%d new assumption\n", decisionLevel()); // OMAR OMAR OMAR
+                if (showsteps) printf("c level:%d new assumption\n", decisionLevel()); // OMAR OMAR OMAR
                 // Perform user provided assumption:
                 Lit p = assumptions[decisionLevel()];
                 if (value(p) == l_True){
-                    if (showsteps) printf("level:%d DEBUG    A ASS\n", decisionLevel());  // OMAR
+                    if (showsteps) printf("c level:%d DEBUG    A ASS\n", decisionLevel());  // OMAR
                     // Dummy decision level:
                     newDecisionLevel();
                 }else if (value(p) == l_False){
-                    if (showsteps) printf("[%d] DEBUG    B ASS\n", decisionLevel());  // OMAR
+                    if (showsteps) printf("c [%d] DEBUG    B ASS\n", decisionLevel());  // OMAR
                     analyzeFinal(~p, conflict);
                     return l_False;
                 }else{
                     next = p;
-                    if (showsteps) printf("[%d] DEBUG    C ASS [%d=%d]\n", decisionLevel(), var(next), sign(next));  // OMAR
+                    if (showsteps) printf("c [%d] DEBUG    C ASS [%d=%d]\n", decisionLevel(), var(next), sign(next));  // OMAR
                     break;
                 }
             }
@@ -775,7 +775,7 @@ lbool Solver::search(int nof_conflicts)
                 // New variable decision:
                 decisions++;
                 next = pickBranchLit();
-                if (showsteps) printf("level:%d choice:%d=%d\n", decisionLevel(), var(next), sign(next));  // OMAR
+                if (showsteps) printf("c level:%d choice:%d=%d\n", decisionLevel(), var(next), sign(next));  // OMAR
 
                 if (next == lit_Undef)
                     // Model found:

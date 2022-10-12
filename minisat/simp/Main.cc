@@ -116,7 +116,7 @@ int main(int argc, char** argv)
             if (rl.rlim_max == RLIM_INFINITY || (rlim_t)cpu_lim < rl.rlim_max){
                 rl.rlim_cur = cpu_lim;
                 if (setrlimit(RLIMIT_CPU, &rl) == -1)
-                    printf("WARNING! Could not set resource limit: CPU-time.\n");
+                    printf("c WARNING! Could not set resource limit: CPU-time.\n");
             } }
 
         // Set limit on virtual memory:
@@ -127,15 +127,15 @@ int main(int argc, char** argv)
             if (rl.rlim_max == RLIM_INFINITY || new_mem_lim < rl.rlim_max){
                 rl.rlim_cur = new_mem_lim;
                 if (setrlimit(RLIMIT_AS, &rl) == -1)
-                    printf("WARNING! Could not set resource limit: Virtual memory.\n");
+                    printf("c WARNING! Could not set resource limit: Virtual memory.\n");
             } }
         
         if (argc == 1)
-            printf("Reading from standard input... Use '--help' for help.\n");
+            printf("c Reading from standard input... Use '--help' for help.\n");
 
         gzFile in = (argc == 1) ? gzdopen(0, "rb") : gzopen(argv[1], "rb");
         if (in == NULL)
-            printf("ERROR! Could not open file: %s\n", argc == 1 ? "<stdin>" : argv[1]), exit(1);
+            printf("c ERROR! Could not open file: %s\n", argc == 1 ? "<stdin>" : argv[1]), exit(1);
         
         if (S.verbosity > 0){
             printf("c ============================[ Problem Statistics ]=============================\n");
@@ -168,7 +168,7 @@ int main(int argc, char** argv)
             if (res != NULL) fprintf(res, "UNSAT\n"), fclose(res);
             if (S.verbosity > 0){
                 printf("c ===============================================================================\n");
-                printf("Solved by simplification\n");
+                printf("c Solved by simplification\n");
                 printStats(S);
                 printf("\n"); }
             printf("s UNSATISFIABLE\n");
