@@ -17,18 +17,18 @@ on top of the state-of-the-art [MiniSat](http://minisat.se/) solver.
   the *values* line starts with a `v`; and all other output lines start
   with a `c` *for *comment*).
 
-* `-model` tells PlanckSAT to print the satisfying assignment (if any)
+* `-model` tells PlanckSat to print the satisfying assignment (if any)
   to standard output. The default is `-no-model`.
 
-* `-rnd-pol` lets PlanckSAT randomize the polarity of a variable upon
+* `-rnd-pol` lets PlanckSat randomize the polarity of a variable upon
   branching, unless the user had set a preferred modality for that variable
   (see `-try-assume` below). The default is `-no-rnd-pol`.
 
-* `-assume "<LITERALS>"` tells PlanckSAT to solve under the given
+* `-assume "<LITERALS>"` tells PlanckSat to solve under the given
   (strong) assumptions. Essentially, every literal in `LITERALS` is added to
   the problem as a separate unit clause.
   
-* `-try-assume "<LITERALS>` tells PlanckSAT to try using the suggested
+* `-try-assume "<LITERALS>` tells PlanckSat to try using the suggested
   polarities for some variables. However, if the formula is unsatisfiable
   under all these (weak) assumptions, the solver may drop one or more
   until a solution is found or the formula is found to be `UNSAT` even
@@ -53,7 +53,7 @@ on top of the state-of-the-art [MiniSat](http://minisat.se/) solver.
   plancksat a.cnf -assume "1 2 -3" -try-assume "4 -5"
   ```
   
-  This tells PlanckSAT to solve `a.cnf` under the assumption that `1` and `2`
+  This tells PlanckSat to solve `a.cnf` under the assumption that `1` and `2`
   be `true`, and `3` be `false`. In other words, we are really solving
   the formula `<a.cnf> /\ (1) /\ (2) /\ (-3)`. Additionally we would
   *prefer* the solution (if any) to have an asserted `4` and a negated `5`.
