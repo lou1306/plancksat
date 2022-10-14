@@ -196,13 +196,9 @@ int main(int argc, char** argv)
         str = strdup((const char*)assume);
         strcat(str, " 0");
         
-        // Then we add the unit clause
+        // Read the string into a vector of literals.
+        // These will be passed to minisat as assumptions
         readClause(str, S, dummy);
-        while (dummy.size()) {
-            S.addClause(dummy.last());
-            dummy.pop();
-        }
-        dummy.clear(); // Just to be sure
         
         // 2. For "try-assumes" we set polarities according to the user's wishes
         // (But the solver may still change them if needed)
