@@ -117,7 +117,7 @@ lbool SimpSolver::solve_(bool do_simp, bool turn_off_simp)
     if (result == l_True)
         result = Solver::solve_();
     else if (verbosity >= 1)
-        printf("===============================================================================\n");
+        printf("c ===============================================================================\n");
 
     if (result == l_True)
         extendModel();
@@ -611,7 +611,7 @@ bool SimpSolver::eliminate(bool turn_off_elim)
             if (isEliminated(elim) || value(elim) != l_Undef) continue;
 
             if (verbosity >= 2 && cnt % 100 == 0)
-                printf("elimination left: %10d\r", elim_heap.size());
+                printf("c elimination left: %10d\r", elim_heap.size());
 
             if (use_asymm){
                 // Temporarily freeze variable. Otherwise, it would immediately end up on the queue again:

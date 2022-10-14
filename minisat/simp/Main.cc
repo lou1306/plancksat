@@ -59,10 +59,10 @@ static void SIGINT_interrupt(int) { solver->interrupt(); }
 // destructors and may cause deadlocks if a malloc/free function happens to be running (these
 // functions are guarded by locks for multithreaded use).
 static void SIGINT_exit(int) {
-    printf("\n"); printf("*** INTERRUPTED ***\n");
+    printf("\n"); printf("c *** INTERRUPTED ***\n");
     if (solver->verbosity > 0){
         printStats(*solver);
-        printf("\n"); printf("*** INTERRUPTED ***\n"); }
+        printf("\n"); printf("c *** INTERRUPTED ***\n"); }
     _exit(1); }
 
 
@@ -79,7 +79,7 @@ int main(int argc, char** argv)
 #if defined(__linux__) && defined(_FPU_EXTENDED) && defined(_FPU_DOUBLE) && defined(_FPU_GETCW)
         fpu_control_t oldcw, newcw;
         _FPU_GETCW(oldcw); newcw = (oldcw & ~_FPU_EXTENDED) | _FPU_DOUBLE; _FPU_SETCW(newcw);
-        printf("WARNING: for repeatability, setting FPU to use double precision\n");
+        printf("c WARNING: for repeatability, setting FPU to use double precision\n");
 #endif
         // Extra options:
         //
