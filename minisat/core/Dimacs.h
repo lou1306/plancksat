@@ -83,7 +83,7 @@ static void parse_DIMACS_main(B& in, Solver& S) {
         printf("c |  Number of variables:  %12d                                         |\n", S.nVars());
         */
         printf("c |  Longest clause:       %12d                                         |\n", maxClause);       
-        printf("c |  Average clause:       %12.2f                                       |\n", avgClause);       
+        printf("c |  Average clause:       %12.2f                                         |\n", avgClause);       
     }
     if (vars != S.nVars())
         fprintf(stderr, "WARNING! DIMACS header mismatch: wrong number of variables.\n");
