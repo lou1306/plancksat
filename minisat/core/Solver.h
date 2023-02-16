@@ -78,6 +78,7 @@ public:
     // 
     void    setPolarity    (Var v, lbool b); // Declare which polarity the decision heuristic should use for a variable. Requires mode 'polarity_user'.
     void    setDecisionVar (Var v, bool b);  // Declare if a variable should be eligible for selection in the decision heuristic.
+    void    forceActivity  (Var v); // LUCA 20221101
 
     // Read state:
     //
@@ -329,7 +330,8 @@ inline int      Solver::nLearnts      ()      const   { return learnts.size(); }
 inline int      Solver::nVars         ()      const   { return vardata.size(); }
 inline int      Solver::nFreeVars     ()      const   { return (int)dec_vars - (trail_lim.size() == 0 ? trail.size() : trail_lim[0]); }
 inline void     Solver::setPolarity   (Var v, lbool b){ user_pol[v] = b; }
-inline void     Solver::setDecisionVar(Var v, bool b) 
+inline void     Solver::forceActivity (Var v) { varBumpActivity(v, 1e8); }
+inline void     Solver::setDecisionVar(Var v, bool b)
 { 
     if      ( b && !decision[v]) dec_vars++;
     else if (!b &&  decision[v]) dec_vars--;

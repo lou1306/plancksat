@@ -208,6 +208,7 @@ int main(int argc, char** argv)
         while (*str1 != '\0') {
             v = parseInt(str1);
             S.setPolarity((v >= 0 ? v : -v), lbool(v > 0));
+            S.forceActivity((v >= 0 ? v : -v));
         }
         
         //=====================================================================
