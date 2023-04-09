@@ -55,7 +55,7 @@ on top of the state-of-the-art [MiniSat](http://minisat.se/) solver.
   
   This tells PlanckSat to solve `a.cnf` under the assumption that `1` and `2`
   be `true`, and `3` be `false`. In other words, we are really solving
-  the formula `<a.cnf> /\ (1) /\ (2) /\ (-3)`. Additionally we would
+  the formula `<a.cnf> /\ (1) /\ (2) /\ (-3)`. Additionally, we would
   *prefer* the solution (if any) to have an asserted `4` and a negated `5`.
 
 ## Building
@@ -71,3 +71,8 @@ The binary will be placed at `$PREFIX/release/bin/plancksat`
 Linux users may prefer using the original Makefile and follow the original
 MiniSat `README`.
 
+## Changelog
+
+* **v1.1**: `-try-assume-from`
+* **v1.0**: `-assume`, `-model`, `-rnd-pol`, `-try-assume`, DIMACS-compliant 
+  output
