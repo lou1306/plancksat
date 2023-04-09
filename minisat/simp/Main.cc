@@ -92,7 +92,8 @@ int main(int argc, char** argv)
 
         // LUCA 20221003
         StringOption assume("MAIN", "assume", "Solve under these additional clauses.", "");
-        StringOption try_assume("MAIN", "try-assume", "Try solving under this additional clause, but feel free to drop any of them", "");
+        StringOption try_assume("MAIN", "try-assume", "Try solving under this additional clause, but feel free to drop any of its literals", "");
+        StringOption try_assume_from("MAIN", "try-assume-from", "Read the try-assume clause from file", "");
 
         parseOptions(argc, argv, true);
         
@@ -102,6 +103,7 @@ int main(int argc, char** argv)
         if (!pre) S.eliminate(true);
 
         S.verbosity = verb;
+        // printf("c Solver settings: -rnd-seed %f, -rnd-freq %f", S.random_seed, S.random_var_freq);
         
         solver = &S;
         // Use signal handlers that forcibly quit until the solver will be able to respond to
@@ -162,7 +164,7 @@ int main(int argc, char** argv)
         double simplified_time = cpuTime();
         if (S.verbosity > 0){
             printf("c |  Simplification time:  %12.2f s                                       |\n", simplified_time - parsed_time);
-            printf("c |                                                                             |\n"); }
+        }
 
         if (!S.okay()){
             if (res != NULL) fprintf(res, "UNSAT\n"), fclose(res);
@@ -185,6 +187,7 @@ int main(int argc, char** argv)
         }
 
         vec<Lit> dummy;
+        unsigned int countWeakAssumes = 0;
         //=====================================================================
         // LUCA 20221003
         // This is where we inject our assumptions.
@@ -209,6 +212,29 @@ int main(int argc, char** argv)
             v = parseInt(str1);
             S.setPolarity((v >= 0 ? v : -v), lbool(v > 0));
             S.forceActivity((v >= 0 ? v : -v));
+            countWeakAssumes++;
+        }
+
+        const char* strFilename = try_assume_from;
+        if (strcmp(strFilename, "")) {
+            gzFile inWeakAssumes = gzopen(strFilename, "rb");
+            if (inWeakAssumes == NULL)
+                printf("c ERROR! Could not open file: %s\n", strFilename), exit(1);
+            StreamBuffer inStream(inWeakAssumes);
+            int v = 0;
+            lbool x;
+            while (!isEof(inStream)) {
+                v = parseInt(inStream);
+                S.setPolarity((v >= 0 ? v : -v), lbool(v > 0));
+                S.forceActivity((v >= 0 ? v : -v));
+                skipWhitespace(inStream);
+                countWeakAssumes++;
+            }
+            gzclose(inWeakAssumes);
+        }
+        if (S.verbosity > 0) {
+            printf("c |  Weak assumptions:  %12d                                            |\n", countWeakAssumes);
+            printf("c |                                                                             |\n");
         }
         
         //=====================================================================
