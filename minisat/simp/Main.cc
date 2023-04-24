@@ -73,7 +73,7 @@ int main(int argc, char** argv)
 {
     try {
         setUsageHelp("USAGE: %s [options] <input-file> <result-output-file>\n\n  where input may be either in plain or gzipped DIMACS.\n");
-        printf("c This is PlanckSAT 1.1\n");
+        printf("c This is PlanckSAT 1.2\n");
         printf("c Based on MiniSAT 2.2.1\n");
         
 #if defined(__linux__) && defined(_FPU_EXTENDED) && defined(_FPU_DOUBLE) && defined(_FPU_GETCW)
