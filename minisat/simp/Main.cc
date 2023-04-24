@@ -210,8 +210,7 @@ int main(int argc, char** argv)
         lbool x;
         while (*str1 != '\0') {
             v = parseInt(str1);
-            S.setPolarity((v >= 0 ? v : -v), lbool(v > 0));
-            S.forceActivity((v >= 0 ? v : -v));
+            S.pushWeak(mkLit(v >= 0 ? v : -v, v > 0));
             countWeakAssumes++;
         }
 
@@ -225,8 +224,9 @@ int main(int argc, char** argv)
             lbool x;
             while (!isEof(inStream)) {
                 v = parseInt(inStream);
-                S.setPolarity((v >= 0 ? v : -v), lbool(v > 0));
-                S.forceActivity((v >= 0 ? v : -v));
+                S.pushWeak(mkLit(v >= 0 ? v : -v, v > 0));
+                // S.setPolarity((v >= 0 ? v : -v), lbool(v > 0));
+                // S.forceActivity((v >= 0 ? v : -v));
                 skipWhitespace(inStream);
                 countWeakAssumes++;
             }

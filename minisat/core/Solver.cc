@@ -139,6 +139,11 @@ Var Solver::newVar(lbool upol, bool dvar)
     return v;
 }
 
+void Solver::pushWeak(Lit x)
+{
+    weakAssumptions.push(x);
+}
+
 
 bool Solver::addClause_(vec<Lit>& ps)
 {
@@ -238,8 +243,15 @@ Lit Solver::pickBranchLit()
 {
     Var next = var_Undef;
 
+    // Give priority to weakly assumed vars
+    if (weakAssumptions.size() > 0) {
+        Lit nextwa = weakAssumptions.last();
+        weakAssumptions.pop();
+        return nextwa;
+    }
+
     // Random decision:
-    if (drand(random_seed) < random_var_freq && !order_heap.empty()){
+    if (next == var_Undef && drand(random_seed) < random_var_freq && !order_heap.empty()){
         next = order_heap[irand(random_seed,order_heap.size())];
         if (value(next) == l_Undef && decision[next])
             rnd_decisions++; }

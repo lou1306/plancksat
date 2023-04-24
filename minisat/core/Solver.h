@@ -79,6 +79,8 @@ public:
     void    setPolarity    (Var v, lbool b); // Declare which polarity the decision heuristic should use for a variable. Requires mode 'polarity_user'.
     void    setDecisionVar (Var v, bool b);  // Declare if a variable should be eligible for selection in the decision heuristic.
     void    forceActivity  (Var v); // LUCA 20221101
+    void    pushWeak       (Lit x); // LUCA 2023024
+
 
     // Read state:
     //
@@ -188,6 +190,7 @@ protected:
     int                 simpDB_assigns;   // Number of top-level assignments since last execution of 'simplify()'.
     int64_t             simpDB_props;     // Remaining number of propagations that must be made before next execution of 'simplify()'.
     vec<Lit>            assumptions;      // Current set of assumptions provided to solve by the user.
+    vec<Lit>            weakAssumptions;  // Current set of weak assumptions provided by the user.
     Heap<VarOrderLt>    order_heap;       // A priority queue of variables ordered with respect to the variable activity.
     double              progress_estimate;// Set by 'search()'.
     bool                remove_satisfied; // Indicates whether possibly inefficient linear scan for satisfied clauses should be performed in 'simplify'.
