@@ -241,17 +241,18 @@ void Solver::cancelUntil(int level) {
 
 Lit Solver::pickBranchLit()
 {
-    Var next = var_Undef;
 
     // Give priority to weakly assumed vars
     if (weakAssumptions.size() > 0) {
         Lit nextwa = weakAssumptions.last();
+        Lit returnLit = mkLit(var(nextwa), sign(nextwa));
         weakAssumptions.pop();
-        return nextwa;
+        return returnLit;
     }
 
+    Var next = var_Undef;
     // Random decision:
-    if (next == var_Undef && drand(random_seed) < random_var_freq && !order_heap.empty()){
+    if (drand(random_seed) < random_var_freq && !order_heap.empty()){
         next = order_heap[irand(random_seed,order_heap.size())];
         if (value(next) == l_Undef && decision[next])
             rnd_decisions++; }
