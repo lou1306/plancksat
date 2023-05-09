@@ -245,7 +245,9 @@ Lit Solver::pickBranchLit()
     // Give priority to weakly assumed vars
     if (weakAssumptions.size() > 0) {
         Lit nextwa = weakAssumptions.last();
-        Lit returnLit = mkLit(var(nextwa), sign(nextwa));
+        // For some reasons returning nextwa directly may cause segfaults
+        // undeer Linux, so let us copy it into a brand new Lit instead
+        Lit returnLit = copyLit(nextwa);
         weakAssumptions.pop();
         return returnLit;
     }
