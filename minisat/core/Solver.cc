@@ -139,9 +139,9 @@ Var Solver::newVar(lbool upol, bool dvar)
     return v;
 }
 
-void Solver::pushWeak(Lit x)
+void Solver::pushWeak(Var v)
 {
-    weakAssumptions.push(x);
+    weakAssumptions.push(mkLit(v >= 0 ? v : -v, v < 0));
 }
 
 
