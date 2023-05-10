@@ -244,13 +244,19 @@ Lit Solver::pickBranchLit()
 
     // Give priority to weakly assumed vars
     if (weakAssumptions.size() > 0) {
-        Lit nextwa = weakAssumptions.last();
-        // For some reasons returning nextwa directly may cause segfaults
-        // undeer Linux, so let us copy it into a brand new Lit instead
-        Lit returnLit = copyLit(nextwa);
-        weakAssumptions.pop();
-        return returnLit;
+        Lit nextwa;
+        // If for some reason a variable with a weak assume has already been
+        // given a value, we skip over it
+        do {
+            nextwa = weakAssumptions.last();
+            weakAssumptions.pop();
+        } while (value(nextwa) != l_Undef && weakAssumptions.size() > 0);
+
+        if (value(nextwa) == l_Undef) {
+            return nextwa;
+        }
     }
+    // Everything else is just the same as in Minisat
 
     Var next = var_Undef;
     // Random decision:
